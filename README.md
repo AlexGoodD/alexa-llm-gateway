@@ -7,12 +7,14 @@ Gateway HTTP para conectar una skill de Alexa con un modelo de lenguaje. Recibe 
 El proyecto cuenta con:
 
 - Un endpoint `POST /alexa/webhook` protegido con validación de firma y marca de tiempo de Alexa.
+- Validación de `context.System.application.applicationId` contra la skill configurada.
+- Validación del sobre mínimo de solicitudes de Alexa mediante VineJS.
 - Manejo de inicio de sesión, finalización, y los intents estándar de cancelar y detener.
 - Extracción de la primera respuesta disponible de los slots del intent.
 - Un servicio de conversación desacoplado de su proveedor de LLM.
 - Un proveedor para OpenRouter con tiempo máximo de respuesta de seis segundos.
 - Respuestas normalizadas para voz y limitadas a 800 caracteres.
-- Pruebas para el rechazo de solicitudes sin firma y para la construcción de la conversación enviada al proveedor.
+- Pruebas unitarias para la verificación de solicitudes, el controlador, la validación del payload y las respuestas del proveedor.
 - Un catálogo de expresiones de ejemplo para `AskQuestionIntent` en `alexa_ask_question_intent_utterances.csv`.
 
 ## Arquitectura
@@ -110,20 +112,19 @@ node ace test --help
 
 ## Variables de entorno
 
-| Variable | Uso | Obligatoria |
-| --- | --- | --- |
-| `APP_KEY` | Cifra datos de AdonisJS. | Sí |
-| `APP_URL` | URL pública enviada a OpenRouter como referencia. | Sí |
-| `OPENROUTER_API_KEY` | Autentica las solicitudes de generación. | Sí para responder preguntas |
-| `ALEXA_SKILL_ID` | Identificador reservado para validar la skill. | Aún no |
-| `DEEPSEEK_API_KEY` | Clave reservada para un proveedor futuro. | Aún no |
+| Variable             | Uso                                                     | Obligatoria                 |
+| -------------------- | ------------------------------------------------------- | --------------------------- |
+| `APP_KEY`            | Cifra datos de AdonisJS.                                | Sí                          |
+| `APP_URL`            | URL pública enviada a OpenRouter como referencia.       | Sí                          |
+| `OPENROUTER_API_KEY` | Autentica las solicitudes de generación.                | Sí para responder preguntas |
+| `ALEXA_SKILL_ID`     | Identificador de la skill que puede usar este endpoint. | Sí                          |
+| `DEEPSEEK_API_KEY`   | Clave reservada para un proveedor futuro.               | Aún no                      |
 
 ## Limitaciones actuales
 
 - El historial de conversación no se persiste; cada pregunta se procesa de forma independiente.
 - El modelo de OpenRouter está fijado en `openrouter/free`.
-- Aún no se valida el identificador de la skill de Alexa.
 - No hay métricas, trazabilidad de solicitudes ni límites de uso por sesión.
-- Las pruebas no cubren aún solicitudes firmadas válidas ni respuestas reales del proveedor.
+- Las pruebas no cubren aún una solicitud firmada con un certificado real de Amazon ni una llamada real a OpenRouter.
 
 Consulta [ROADMAP.md](ROADMAP.md) para las siguientes etapas.

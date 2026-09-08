@@ -22,7 +22,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   APP_KEY: Env.schema.secret(),
   APP_URL: Env.schema.string({ format: 'url', tld: false }),
 
-  ALEXA_SKILL_ID: Env.schema.string.optional(),
+  ALEXA_SKILL_ID: Env.schema.string(),
   DEEPSEEK_API_KEY: Env.schema.string.optional(),
   OPENROUTER_API_KEY: Env.schema.string.optional(),
 

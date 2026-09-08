@@ -1,24 +1,8 @@
-import type { HttpContext } from '@adonisjs/core/http'
 import { chatService } from '#services/chat_service'
-
-type AlexaWebhookRequest = {
-  session?: {
-    sessionId?: string
-  }
-  request?: {
-    intent?: {
-      name?: string
-      slots?: Record<
-        string,
-        {
-          value?: string
-        }
-      >
-    }
-    timestamp?: string
-    type?: string
-  }
-}
+import type ChatService from '#services/chat_service'
+import env from '#start/env'
+import { alexaWebhookValidator } from '#validators/alexa'
+import type { HttpContext } from '@adonisjs/core/http'
 
 type AlexaWebhookResponse = {
   version: '1.0'
@@ -32,10 +16,25 @@ type AlexaWebhookResponse = {
 }
 
 export default class AlexaWebhookController {
-  async handle({ logger, request }: HttpContext): Promise<AlexaWebhookResponse> {
-    const alexaRequest = request.all() as AlexaWebhookRequest
-    const requestType = alexaRequest.request?.type
-    const intentName = alexaRequest.request?.intent?.name
+  constructor(
+    private readonly responseService: Pick<ChatService, 'generateResponse'> = chatService
+  ) {}
+
+  async handle({
+    logger,
+    request,
+    response,
+  }: HttpContext): Promise<AlexaWebhookResponse | unknown> {
+    const alexaRequest = await request.validateUsing(alexaWebhookValidator)
+    const receivedSkillId = alexaRequest.context.System.application.applicationId
+
+    if (receivedSkillId !== env.get('ALEXA_SKILL_ID')) {
+      logger.warn({ receivedSkillId }, 'Alexa request for an unauthorized skill')
+      return response.forbidden({ message: 'Alexa skill is not authorized' })
+    }
+
+    const requestType = alexaRequest.request.type
+    const intentName = alexaRequest.request.intent?.name
 
     if (requestType === 'SessionEndedRequest') {
       return this.createResponse(undefined, true)
@@ -52,7 +51,7 @@ export default class AlexaWebhookController {
     const question = this.getQuestion(alexaRequest)
     if (question) {
       try {
-        const providerResponse = await chatService.generateResponse(
+        const providerResponse = await this.responseService.generateResponse(
           alexaRequest.session?.sessionId ?? 'anonymous-session',
           question
         )
@@ -70,8 +69,8 @@ export default class AlexaWebhookController {
     return this.createResponse('¿Qué te gustaría preguntarme?', false)
   }
 
-  private getQuestion(alexaRequest: AlexaWebhookRequest) {
-    const slots = alexaRequest.request?.intent?.slots
+  private getQuestion(alexaRequest: Awaited<ReturnType<typeof alexaWebhookValidator.validate>>) {
+    const slots = alexaRequest.request.intent?.slots
     if (!slots) {
       return undefined
     }

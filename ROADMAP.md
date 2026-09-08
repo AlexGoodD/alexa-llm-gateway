@@ -13,15 +13,17 @@ Estado: completada parcialmente.
 - [x] Limitar y normalizar las respuestas para síntesis de voz.
 - [x] Añadir pruebas unitarias y una prueba funcional básica.
 - [x] Documentar expresiones para `AskQuestionIntent`.
-- [ ] Validar que `request.application.applicationId` coincida con `ALEXA_SKILL_ID`.
-- [ ] Definir explícitamente el esquema completo de los intents y slots admitidos.
+- [x] Validar que `context.System.application.applicationId` coincida con `ALEXA_SKILL_ID`.
+- [x] Validar el sobre mínimo de Alexa y los slots de texto admitidos.
 
 ## Fase 2 — Calidad y seguridad
 
 Objetivo: asegurar la integración antes de exponerla a usuarios finales.
 
 - [ ] Añadir pruebas funcionales con solicitudes Alexa válidas y firmadas.
-- [ ] Cubrir errores de OpenRouter, timeouts y respuestas sin contenido.
+- [x] Cubrir errores HTTP y respuestas sin contenido de OpenRouter.
+- [x] Verificar que las llamadas a OpenRouter incluyan un límite de tiempo.
+- [ ] Probar el comportamiento al agotarse el límite de tiempo de OpenRouter.
 - [ ] Probar los flujos de cada intent estándar y del intent de preguntas.
 - [ ] Añadir validación de tamaño y contenido de las preguntas.
 - [ ] Configurar límites de solicitudes por IP y por sesión.
