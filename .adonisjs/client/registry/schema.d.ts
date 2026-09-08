@@ -11,12 +11,12 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/alexa/webhook'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/alexa').alexaWebhookValidator)>>
       paramsTuple: []
       params: {}
-      query: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/alexa').alexaWebhookValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/alexa_webhook_controller').default['handle']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alexa_webhook_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/alexa_webhook_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'auth.new_account.store': {
