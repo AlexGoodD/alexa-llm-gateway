@@ -6,6 +6,12 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'alexa_webhook': {
+    methods: ["POST"],
+    pattern: '/alexa/webhook',
+    tokens: [{"old":"/alexa/webhook","type":0,"val":"alexa","end":""},{"old":"/alexa/webhook","type":0,"val":"webhook","end":""}],
+    types: placeholder as Registry['alexa_webhook']['types'],
+  },
   'auth.new_account.store': {
     methods: ["POST"],
     pattern: '/api/v1/auth/signup',

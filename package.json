@@ -65,6 +65,7 @@
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
+    "ask-sdk-express-adapter": "^2.14.0",
     "better-sqlite3": "^13.0.3",
     "luxon": "^3.7.2",
     "reflect-metadata": "^0.2.2"

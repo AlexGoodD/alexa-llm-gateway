@@ -15,6 +15,8 @@ router.get('/', () => {
   return { hello: 'world' }
 })
 
+router.post('/alexa/webhook', [controllers.AlexaWebhook, 'handle']).use(middleware.alexaSignature())
+
 router
   .group(() => {
     router

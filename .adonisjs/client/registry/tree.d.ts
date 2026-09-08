@@ -2,6 +2,7 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  alexaWebhook: typeof routes['alexa_webhook']
   auth: {
     newAccount: {
       store: typeof routes['auth.new_account.store']
